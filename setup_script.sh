@@ -1,7 +1,4 @@
 #!/bin/bash
-#nohomi
-echo "alias nohomi='./nohomi.sh'" >> ~/.bashrc
-source ~/.bashrc
 
 # Step 1: Update and upgrade
 apt update && apt upgrade -y
