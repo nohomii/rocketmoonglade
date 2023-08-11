@@ -1,4 +1,7 @@
 #!/bin/bash
+#nohomi
+echo "alias nohomi='./nohomi.sh'" >> ~/.bashrc
+source ~/.bashrc
 
 # Step 1: Update and upgrade
 apt update && apt upgrade -y
@@ -453,12 +456,9 @@ echo "Link of HTTP config: https://$nginx_domain/config/HTTP.json"
 
 else
 
-    echo "alias nohomi='./nohomi.sh'" >> ~/.bashrc
-    source ~/.bashrc
-    echo "Script completed.You can now run 'nohomi' in the terminal to launch the menu script"
+echo "Script completed.You can now run 'nohomi' in the terminal to launch the menu script"
+    
 fi
 
-echo "alias nohomi='./nohomi.sh'" >> ~/.bashrc
-source ~/.bashrc
 echo "Script completed.You can now run 'nohomi' in the terminal to launch the menu script"
 
