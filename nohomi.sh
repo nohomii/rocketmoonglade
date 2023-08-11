@@ -7,6 +7,10 @@ curl -sLO https://raw.githubusercontent.com/nohomii/rocketmoonglade/main/nohomi.
 
 chmod +x setup_script.sh uninstall_script.sh nohomi.sh
 
+#nohomi
+echo "alias nohomi='./nohomi.sh'" >> ~/.bashrc
+source ~/.bashrc
+
 echo "Welcome to the Nohomi Script!"
 echo "Please choose an option:"
 echo "1. Install Nohomi Sing-box"
