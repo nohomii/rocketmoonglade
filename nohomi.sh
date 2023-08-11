@@ -7,8 +7,11 @@ curl -sLO https://raw.githubusercontent.com/nohomii/rocketmoonglade/main/nohomi.
 
 chmod +x setup_script.sh uninstall_script.sh nohomi.sh
 
-#nohomi
-echo "alias nohomi='./nohomi.sh'" | sudo tee -a ~/.bashrc
+# Add alias to .bashrc
+echo "alias nohomi='./nohomi.sh'" >> ~/.bashrc
+
+# Source .bashrc to apply the changes
+source ~/.bashrc
 
 echo "Welcome to the Nohomi Script!"
 echo "Please choose an option:"
@@ -62,8 +65,6 @@ case $choice in
         esac
     done
     ;;
-    esac
-    ;;
     6)
         bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
         ;;
@@ -84,4 +85,3 @@ case $choice in
         echo "Invalid choice. Please select a valid option."
         ;;
 esac
-
