@@ -8,8 +8,7 @@ curl -sLO https://raw.githubusercontent.com/nohomii/rocketmoonglade/main/nohomi.
 chmod +x setup_script.sh uninstall_script.sh nohomi.sh
 
 #nohomi
-echo "alias nohomi='./nohomi.sh'" >> ~/.bashrc
-source ~/.bashrc
+echo "alias nohomi='./nohomi.sh'" | sudo tee -a ~/.bashrc
 
 echo "Welcome to the Nohomi Script!"
 echo "Please choose an option:"
