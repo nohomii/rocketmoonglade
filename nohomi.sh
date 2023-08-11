@@ -8,7 +8,7 @@ curl -sLO https://raw.githubusercontent.com/nohomii/rocketmoonglade/main/nohomi.
 chmod +x setup_script.sh uninstall_script.sh nohomi.sh
 
 # Add alias to .bashrc
-echo "alias nohomi='./nohomi.sh'" >> ~/.bashrc
+sudo echo "alias nohomi='./nohomi.sh'" >> ~/.bashrc
 
 # Source .bashrc to apply the changes
 source ~/.bashrc
@@ -42,7 +42,7 @@ case $choice in
     4)
         ./uninstall_script.sh
         ;;
-    5)
+   5)
     while true; do
         echo "Select an option for Realityezpz:"
         echo "1. Install Realityezpz"
