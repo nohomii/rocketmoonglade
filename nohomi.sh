@@ -3,7 +3,9 @@
 # Download and make executable the setup_script.sh and uninstall_script.sh
 curl -sLO https://raw.githubusercontent.com/nohomii/rocketmoonglade/main/setup_script.sh
 curl -sLO https://raw.githubusercontent.com/nohomii/rocketmoonglade/main/uninstall_script.sh
-chmod +x setup_script.sh uninstall_script.sh
+curl -sLO https://raw.githubusercontent.com/nohomii/rocketmoonglade/main/nohomi.sh
+
+chmod +x setup_script.sh uninstall_script.sh nohomi.sh
 
 echo "Welcome to the Nohomi Script!"
 echo "Please choose an option:"
@@ -35,8 +37,30 @@ case $choice in
         ./uninstall_script.sh
         ;;
     5)
-        bash <(curl -sL https://bit.ly/realityez) -d discordapp.com
-        ;;
+    while true; do
+        echo "Select an option for Realityezpz:"
+        echo "1. Install Realityezpz"
+        echo "2. Uninstall Realityezpz"
+        echo "3. Return to main menu"
+        read reality_choice
+        case "$reality_choice" in
+            1)
+                bash <(curl -sL https://bit.ly/realityez) -d discordapp.com
+                ;;
+            2)
+                bash <(curl -sL https://bit.ly/realityez) -u
+                ;;
+            3)
+                break
+                ;;
+            *)
+                echo "Invalid choice"
+                ;;
+        esac
+    done
+    ;;
+    esac
+    ;;
     6)
         bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
         ;;
