@@ -114,6 +114,13 @@ server1=${server1:-"cdn.discordapp.com"}
 read -p "Enter second server name [or press Enter for default]: " server2
 server2=${server2:-"discordapp.com"}
 
+# Ask user for transport mode
+echo "Choose the Transport mode:"
+echo "1. TCP+HTTP (Default)"
+echo "2. TCP"
+read -p "Enter the number of your choice [1]: " transport_choice
+transport_choice=${transport_choice:-1}
+
 # Step 11: Generate Reality keypair and capture output
 keypair_output=$(sudo /root/sing-box generate reality-keypair)
 
@@ -123,6 +130,8 @@ public_key=$(echo "$keypair_output" | awk '/PublicKey:/{print $2}')
 
 short_id1=$(/root/sing-box generate rand --hex 8)
 short_id2=$(/root/sing-box generate rand --hex 8)
+
+if [[ $transport_choice == 1 ]]; then
 
 # Step 12: Replace variables in the config file
 sed -i "s|\[Variable1\]|$uuid|g" /root/sing-box_config.json
@@ -677,8 +686,8 @@ echo "$http_config" > /root/config/HTTP.json
 # Display download links
 cat /root/config/TCP.json
 sleep 0.2
-echo "---------------------------------------"
 cat /root/config/HTTP.json
+
 else
 
 echo "Script completed.You can now run 'nohomi' in the terminal to launch the menu script"
@@ -686,3 +695,157 @@ echo "Script completed.You can now run 'nohomi' in the terminal to launch the me
 fi
 fi
 echo "Script completed. You can now run 'nohomi' in the terminal to launch the menu script"
+
+elif [[ $transport_choice == 2 ]]; then
+
+systemctl stop nginx haproxy
+
+cat << EOF > /root/sing-box_config.json
+{
+    "log": {
+        "level": "info",
+        "timestamp": true
+    },
+    "inbounds": [
+        {
+            "type": "vless",
+            "tag": "vless-in",
+            "listen": "::",
+            "listen_port": 443,
+            "users": [
+                {
+                    "uuid": "[Variable1]",
+                    "flow": ""
+                }
+            ],
+            "tls": {
+                "enabled": true,
+                "server_name": "[Variable2]",
+                "reality": {
+                    "enabled": true,
+                    "handshake": {
+                        "server": "[Variable2]",
+                        "server_port": 443
+                    },
+                    "private_key": "[Variable3]",
+                    "short_id": [
+                        "[Variable5]"
+                    ]
+                }
+            }
+        }
+    ],
+    "outbounds": [
+         {
+            "type": "direct",
+            "tag": "direct"
+        }
+    ]
+}
+EOF
+
+sed -i "s|\[Variable1\]|$uuid|g" /root/sing-box_config.json
+sed -i "s|\[Variable2\]|$server1|g" /root/sing-box_config.json
+sed -i "s|\[Variable3\]|$private_key|g" /root/sing-box_config.json
+sed -i "s|\[Variable5\]|$short_id1|g" /root/sing-box_config.json
+
+sleep 0.2
+systemctl daemon-reload
+systemctl sing-box
+server_ipv4=$(curl -s http://checkip.amazonaws.com)
+
+link1="vless://$uuid@$server_ipv4:443/?type=tcp&encryption=none&sni=$server1&alpn=h2&fp=chrome&security=reality&pbk=$public_key&sid=$short_id1#TCP"
+
+# Generate and display QR codes
+qrencode -t ANSIUTF8 -o - "$link1"
+echo "Link of TCP config: $link1"
+
+
+# Prompt user for proceeding to step 23
+read -p "Do you want to proceed and generate client side configuration files? (y/n): " proceed
+
+if [[ $proceed == "y" ]]; then
+# Step 23: Generate client side configuration files
+
+# TCP.json
+tcp_config='{
+  "dns": {
+    "rules": [],
+    "servers": [
+      {
+        "address": "tls://1.1.1.1",
+        "tag": "dns-remote",
+        "detour": "proxy",
+        "strategy": "ipv4_only"
+      }
+    ]
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "interface_name": "ipv4-tun",
+      "inet4_address": "172.19.0.1/28",
+      "mtu": 1500,
+      "stack": "gvisor",
+      "endpoint_independent_nat": true,
+      "auto_route": true,
+      "strict_route": true,
+      "sniff": true
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "vless",
+      "tag": "proxy",
+      "server": "'$server_ipv4'",
+      "server_port": 443,
+      "uuid": "'$uuid'",
+      "flow": "",
+      "tls": {
+        "alpn": ["h2"],
+        "enabled": true,
+        "server_name": "'$server1'",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "'$public_key'",
+          "short_id": "'$short_id1'"
+        }
+      },
+      "packet_encoding": "xudp"
+    },
+    {
+      "tag": "dns-out",
+      "type": "dns"
+    }
+  ],
+  "route": {
+    "auto_detect_interface": true,
+    "final": "proxy",
+    "rules": [
+      {
+        "protocol": "dns",
+        "outbound": "dns-out"
+      }
+    ]
+  }
+}'
+
+
+# Save configurations to files
+mkdir -p /root/config
+echo "$tcp_config" > /root/config/TCP.json
+
+# Display download links
+cat /root/config/TCP.json
+
+else
+
+echo "Script completed.You can now run 'nohomi' in the terminal to launch the menu script"
+    
+fi
+echo "Script completed.You can now run 'nohomi' in the terminal to launch the menu script"
+fi
