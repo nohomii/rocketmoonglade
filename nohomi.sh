@@ -37,6 +37,7 @@ case $choice in
         ;;
     3)
         rm -rf /var/www/html/config
+        rm -rf /root/config
         echo "CMD files removed."
         ;;
     4)
