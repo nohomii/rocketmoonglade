@@ -37,6 +37,9 @@ rm /etc/nginx/nginx.conf
 # Remove HTML directory
 rm -rf /var/www/html
 
+#remove cmd files
+rm -rf /root/config
+
 # Uninstall qrencode
 apt-get -y remove qrencode
 
