@@ -136,7 +136,10 @@ echo "Configuration completed."
 
 #!/bin/bash
 
-# ... Previous steps ...
+# Ask user if they want to use a domain or not
+read -p "Do you want to use a domain for SSL certificate? (y/n): " use_domain
+
+if [[ $use_domain == "y" ]]; then
 
 # Temp disable nginx
 sudo systemctl stop nginx
@@ -456,6 +459,229 @@ else
 echo "Script completed.You can now run 'nohomi' in the terminal to launch the menu script"
     
 fi
+else
+    # Proceed without SSL certificate setup
+    
+    # ... Rest of the script ...
+    
+    # Step 19: Configure haproxy
+    cat << EOF > /etc/haproxy/haproxy.cfg
+    global
+        log /dev/log local0 info
+        log /dev/log local1 info
+        chroot /var/lib/haproxy
+        user haproxy
+        group haproxy
+        daemon
+
+        # performance
+        maxconn 5000
+
+    defaults
+        log global
+        mode tcp
+        option tcplog
+        option dontlognull
+        timeout connect 30s
+        timeout client 60s
+        timeout server 60s
+
+    frontend front_tcp
+        bind *:443
+        tcp-request inspect-delay 2s
+        tcp-request content accept if { req_ssl_hello_type 1 } # your server's sni goes here
+
+        acl discord_sni req_ssl_sni -i $server1
+        acl cdn_sni req_ssl_sni -i $server2
+
+        use_backend reality if discord_sni
+        use_backend cdn_reality if cdn_sni
+
+    backend reality
+        mode tcp
+        server reality 127.0.0.1:8443
+
+    backend cdn_reality
+        mode tcp
+        server cdn_reality 127.0.0.1:8485
+
+EOF
+
+    echo "Haproxy configuration completed."
+    
+    # Step 21: Enable services
+    sleep 0.2
+    systemctl daemon-reload
+    systemctl restart haproxy sing-box
+
+# Step 22: Generate links
+server_ipv4=$(curl -s http://checkip.amazonaws.com)
+
+link1="vless://$uuid@$server_ipv4:443/?type=tcp&encryption=none&sni=$server1&alpn=h2&fp=chrome&security=reality&pbk=$public_key&sid=$short_id1#TCP"
+link2="vless://$uuid@$server_ipv4:443/?type=http&encryption=none&sni=$server2&fp=chrome&security=reality&pbk=$public_key&sid=$short_id2#HTTP"
+
+# Generate and display QR codes
+qrencode -t ANSIUTF8 -o - "$link1"
+echo "Link of TCP config: $link1"
+
+qrencode -t ANSIUTF8 -o - "$link2"
+echo "Link of HTTP config: $link2"
+
+# Prompt user for proceeding to step 23
+read -p "Do you want to proceed and generate client side configuration files? (y/n): " proceed
+
+if [[ $proceed == "y" ]]; then
+# Step 23: Generate client side configuration files
+
+# TCP.json
+tcp_config='{
+  "dns": {
+    "rules": [],
+    "servers": [
+      {
+        "address": "tls://1.1.1.1",
+        "tag": "dns-remote",
+        "detour": "proxy",
+        "strategy": "ipv4_only"
+      }
+    ]
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "interface_name": "ipv4-tun",
+      "inet4_address": "172.19.0.1/28",
+      "mtu": 1500,
+      "stack": "gvisor",
+      "endpoint_independent_nat": true,
+      "auto_route": true,
+      "strict_route": true,
+      "sniff": true
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "vless",
+      "tag": "proxy",
+      "server": "'$server_ipv4'",
+      "server_port": 443,
+      "uuid": "'$uuid'",
+      "flow": "",
+      "tls": {
+        "alpn": ["h2"],
+        "enabled": true,
+        "server_name": "'$server1'",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "'$public_key'",
+          "short_id": "'$short_id1'"
+        }
+      },
+      "packet_encoding": "xudp"
+    },
+    {
+      "tag": "dns-out",
+      "type": "dns"
+    }
+  ],
+  "route": {
+    "auto_detect_interface": true,
+    "final": "proxy",
+    "rules": [
+      {
+        "protocol": "dns",
+        "outbound": "dns-out"
+      }
+    ]
+  }
+}'
+
+# HTTP.json
+http_config='{
+  "dns": {
+    "rules": [],
+    "servers": [
+      {
+        "address": "tls://1.1.1.1",
+        "tag": "dns-remote",
+        "detour": "proxy",
+        "strategy": "ipv4_only"
+      }
+    ]
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "interface_name": "ipv4-tun",
+      "inet4_address": "172.19.0.1/28",
+      "mtu": 1500,
+      "stack": "gvisor",
+      "endpoint_independent_nat": true,
+      "auto_route": true,
+      "strict_route": true,
+      "sniff": true
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "vless",
+      "tag": "proxy",
+      "server": "'$server_ipv4'",
+      "server_port": 443,
+      "uuid": "'$uuid'",
+      "flow": "",
+      "tls": {
+        "enabled": true,
+        "server_name": "'$server2'",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "'$public_key'",
+          "short_id": "'$short_id2'"
+        }
+      },
+      "packet_encoding": "xudp",
+      "transport": {
+        "type": "http"
+      }
+    },
+    {
+      "tag": "dns-out",
+      "type": "dns"
+    }
+  ],
+  "route": {
+    "auto_detect_interface": true,
+    "final": "proxy",
+    "rules": [
+      {
+        "protocol": "dns",
+        "outbound": "dns-out"
+      }
+    ]
+  }
+}'
+
+# Save configurations to files
+mkdir -p /var/www/html/config
+echo "$tcp_config" > /var/www/html/config/TCP.json
+echo "$http_config" > /var/www/html/config/HTTP.json
+
+# Display download links
+echo "Link of TCP config: https://$nginx_domain/config/TCP.json"
+echo "Link of HTTP config: https://$nginx_domain/config/HTTP.json"
+
+else
 
 echo "Script completed.You can now run 'nohomi' in the terminal to launch the menu script"
-
+    
+fi
+fi
+echo "Script completed. You can now run 'nohomi' in the terminal to launch the menu script"
