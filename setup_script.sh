@@ -670,14 +670,14 @@ http_config='{
 }'
 
 # Save configurations to files
-mkdir -p /var/www/html/config
-echo "$tcp_config" > /var/www/html/config/TCP.json
-echo "$http_config" > /var/www/html/config/HTTP.json
+mkdir -p /root/config
+echo "$tcp_config" > /root/config/TCP.json
+echo "$http_config" > /root/config/HTTP.json
 
 # Display download links
-echo "Link of TCP config: https://$nginx_domain/config/TCP.json"
-echo "Link of HTTP config: https://$nginx_domain/config/HTTP.json"
-
+cat /root/config/TCP.json
+sleep 0.2
+cat /root/config/HTTP.json
 else
 
 echo "Script completed.You can now run 'nohomi' in the terminal to launch the menu script"
