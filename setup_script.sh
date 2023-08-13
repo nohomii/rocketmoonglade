@@ -677,6 +677,7 @@ echo "$http_config" > /root/config/HTTP.json
 # Display download links
 cat /root/config/TCP.json
 sleep 0.2
+echo "---------------------------------------"
 cat /root/config/HTTP.json
 else
 
