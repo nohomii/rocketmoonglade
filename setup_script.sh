@@ -751,7 +751,7 @@ sed -i "s|\[Variable5\]|$short_id1|g" /root/sing-box_config.json
 
 sleep 0.2
 systemctl daemon-reload
-systemctl sing-box
+systemctl restart sing-box
 server_ipv4=$(curl -s http://checkip.amazonaws.com)
 
 link1="vless://$uuid@$server_ipv4:443/?type=tcp&encryption=none&sni=$server1&alpn=h2&fp=chrome&security=reality&pbk=$public_key&sid=$short_id1#TCP"
