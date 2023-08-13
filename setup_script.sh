@@ -842,10 +842,22 @@ echo "$tcp_config" > /root/config/TCP.json
 # Display download links
 cat /root/config/TCP.json
 
+sleep 0.2
+systemctl daemon-reload
+systemctl restart sing-box
+
 else
 
 echo "Script completed.You can now run 'nohomi' in the terminal to launch the menu script"
-    
+sleep 0.2
+systemctl daemon-reload
+systemctl restart sing-box
+
 fi
+
 echo "Script completed.You can now run 'nohomi' in the terminal to launch the menu script"
+systemctl daemon-reload
+sleep 0.2
+systemctl restart sing-box
+
 fi
