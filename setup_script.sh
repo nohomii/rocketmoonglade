@@ -42,7 +42,7 @@ cat << EOF > /root/sing-box_config.json
             "users": [
                 {
                     "uuid": "[Variable1]",
-                    "flow": ""
+                    "flow": "xtls-rprx-vision"
                 }
             ],
             "tls": {
@@ -302,7 +302,7 @@ systemctl restart haproxy nginx sing-box
 # Step 22: Generate links
 server_ipv4=$(curl -s http://checkip.amazonaws.com)
 
-link1="vless://$uuid@$server_ipv4:443/?type=tcp&encryption=none&sni=$server1&alpn=h2&fp=chrome&security=reality&pbk=$public_key&sid=$short_id1#TCP"
+link1="vless://$uuid@$server_ipv4:443/?type=tcp&encryption=none&flow=xtls-rprx-vision&sni=$server1&alpn=h2&fp=chrome&security=reality&pbk=$public_key&sid=$short_id1#TCP"
 link2="vless://$uuid@$server_ipv4:443/?type=http&encryption=none&sni=$server2&fp=chrome&security=reality&pbk=$public_key&sid=$short_id2#HTTP"
 
 # Generate and display QR codes
@@ -344,14 +344,14 @@ tcp_config='{
       "sniff": true
     }
   ],
-  "outbounds": [
+   "outbounds": [
     {
       "type": "vless",
       "tag": "proxy",
       "server": "'$server_ipv4'",
       "server_port": 443,
       "uuid": "'$uuid'",
-      "flow": "",
+      "flow": "xtls-rprx-vision",
       "tls": {
         "alpn": ["h2"],
         "enabled": true,
@@ -366,8 +366,14 @@ tcp_config='{
           "short_id": "'$short_id1'"
         }
       },
-      "packet_encoding": "xudp"
+	  "multiplex": {
+        "enabled": true,
+        "protocol": "h2mux",
+        "max_streams": 32
+   
     },
+	 "packet_encoding": "xudp"
+	 }
     {
       "tag": "dns-out",
       "type": "dns"
@@ -526,7 +532,7 @@ EOF
 # Step 22: Generate links
 server_ipv4=$(curl -s http://checkip.amazonaws.com)
 
-link1="vless://$uuid@$server_ipv4:443/?type=tcp&encryption=none&sni=$server1&alpn=h2&fp=chrome&security=reality&pbk=$public_key&sid=$short_id1#TCP"
+link1="vless://$uuid@$server_ipv4:443/?type=tcp&encryption=none&flow=xtls-rprx-vision&sni=$server1&alpn=h2&fp=chrome&security=reality&pbk=$public_key&sid=$short_id1#TCP"
 link2="vless://$uuid@$server_ipv4:443/?type=http&encryption=none&sni=$server2&fp=chrome&security=reality&pbk=$public_key&sid=$short_id2#HTTP"
 
 # Generate and display QR codes
@@ -568,14 +574,14 @@ tcp_config='{
       "sniff": true
     }
   ],
-  "outbounds": [
+   "outbounds": [
     {
       "type": "vless",
       "tag": "proxy",
       "server": "'$server_ipv4'",
       "server_port": 443,
       "uuid": "'$uuid'",
-      "flow": "",
+      "flow": "xtls-rprx-vision",
       "tls": {
         "alpn": ["h2"],
         "enabled": true,
@@ -590,8 +596,14 @@ tcp_config='{
           "short_id": "'$short_id1'"
         }
       },
-      "packet_encoding": "xudp"
+	  "multiplex": {
+        "enabled": true,
+        "protocol": "h2mux",
+        "max_streams": 32
+   
     },
+	 "packet_encoding": "xudp"
+	 }
     {
       "tag": "dns-out",
       "type": "dns"
@@ -715,7 +727,7 @@ cat << EOF > /root/sing-box_config.json
             "users": [
                 {
                     "uuid": "[Variable1]",
-                    "flow": ""
+                    "flow": "xtls-rprx-vision"
                 }
             ],
             "tls": {
@@ -754,7 +766,7 @@ systemctl daemon-reload
 systemctl restart sing-box
 server_ipv4=$(curl -s http://checkip.amazonaws.com)
 
-link1="vless://$uuid@$server_ipv4:443/?type=tcp&encryption=none&sni=$server1&alpn=h2&fp=chrome&security=reality&pbk=$public_key&sid=$short_id1#TCP"
+link1="vless://$uuid@$server_ipv4:443/?type=tcp&encryption=none&flow=xtls-rprx-vision&sni=$server1&alpn=h2&fp=chrome&security=reality&pbk=$public_key&sid=$short_id1#TCP"
 
 # Generate and display QR codes
 qrencode -t ANSIUTF8 -o - "$link1"
@@ -800,7 +812,7 @@ tcp_config='{
       "server": "'$server_ipv4'",
       "server_port": 443,
       "uuid": "'$uuid'",
-      "flow": "",
+      "flow": "xtls-rprx-vision",
       "tls": {
         "alpn": ["h2"],
         "enabled": true,
@@ -815,8 +827,14 @@ tcp_config='{
           "short_id": "'$short_id1'"
         }
       },
-      "packet_encoding": "xudp"
+	  "multiplex": {
+        "enabled": true,
+        "protocol": "h2mux",
+        "max_streams": 32
+   
     },
+	 "packet_encoding": "xudp"
+	 }
     {
       "tag": "dns-out",
       "type": "dns"
