@@ -368,12 +368,11 @@ tcp_config='{
       },
 	  "multiplex": {
         "enabled": true,
-        "protocol": "h2mux",
-        "max_streams": 32
+        "protocol": "yamux"
    
     },
 	 "packet_encoding": "xudp"
-	 }
+	 },
     {
       "tag": "dns-out",
       "type": "dns"
@@ -598,12 +597,11 @@ tcp_config='{
       },
 	  "multiplex": {
         "enabled": true,
-        "protocol": "h2mux",
-        "max_streams": 32
+        "protocol": "yamux"
    
     },
 	 "packet_encoding": "xudp"
-	 }
+	 },
     {
       "tag": "dns-out",
       "type": "dns"
@@ -829,12 +827,11 @@ tcp_config='{
       },
 	  "multiplex": {
         "enabled": true,
-        "protocol": "h2mux",
-        "max_streams": 32
+        "protocol": "yamux"
    
     },
 	 "packet_encoding": "xudp"
-	 }
+	 },
     {
       "tag": "dns-out",
       "type": "dns"
