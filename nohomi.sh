@@ -23,8 +23,9 @@ echo "5. Realityezpz"
 echo "6. 3xUI Sanaei"
 echo "7. X-UI Alireza"
 echo "8. Marzban"
-echo "9. Hiddify"
-echo "10. Exit"
+echo "9. Juicity"
+echo "10. Hiddify"
+echo "11. Exit"
 
 read choice
 
@@ -75,10 +76,14 @@ case $choice in
     8)
         sudo bash -c "$(curl -sL https://github.com/Gozargah/Marzban-scripts/raw/master/marzban.sh)" @ install
         ;;
-    9)
-        sudo bash -c "$(curl -Lfo- https://raw.githubusercontent.com/hiddify/hiddify-config/main/common/download_install.sh)"
+        
+     9)
+        sudo bash -c "$(curl -sL  https://raw.githubusercontent.com/nohomii/Juicity-Installer/main/juicity-installer.sh)" @ install
         ;;
     10)
+        sudo bash -c "$(curl -Lfo- https://raw.githubusercontent.com/hiddify/hiddify-config/main/common/download_install.sh)"
+        ;;
+    11)
         echo "Exiting."
         exit 0
         ;;
