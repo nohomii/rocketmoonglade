@@ -7,7 +7,7 @@ apt update && apt upgrade -y
 apt install -y curl socat net-tools haproxy nginx qrencode
 
 # Step 3: Download and install Sing-box binary
-curl -Lo /root/sb https://github.com/SagerNet/sing-box/releases/download/v1.3.6/sing-box-1.3.6-linux-amd64.tar.gz
+curl -Lo /root/sb https://github.com/SagerNet/sing-box/releases/download/v1.4.0/sing-box-1.4.0-linux-amd64.tar.gz
 tar -xzf /root/sb
 cp -f /root/sing-box-*/sing-box /root
 rm -r /root/sb /root/sing-box-*
