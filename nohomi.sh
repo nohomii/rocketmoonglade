@@ -25,7 +25,8 @@ echo "7. X-UI Alireza"
 echo "8. Marzban"
 echo "9. Juicity"
 echo "10. Hiddify"
-echo "11. Exit"
+echo "11. SoftEther"
+echo "12. Exit"
 
 read choice
 
@@ -83,7 +84,12 @@ case $choice in
     10)
         sudo bash -c "$(curl -Lfo- https://raw.githubusercontent.com/hiddify/hiddify-config/main/common/download_install.sh)"
         ;;
+
     11)
+      sudo bash -c "$(curl -Lfo- https://raw.githubusercontent.com/nohomii/rocketmoonglade/main/softether.sh)"
+      ;;
+      
+    12)
         echo "Exiting."
         exit 0
         ;;
